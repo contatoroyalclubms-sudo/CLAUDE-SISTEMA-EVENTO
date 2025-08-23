@@ -5,7 +5,9 @@
       "WebFetch(domain:github.com)",
       "Bash(docker:*)",
       "Bash(where psql)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(\"AUTO-DEPLOY-SCRIPT.bat\")"
     ],
     "deny": [],
     "ask": []
