@@ -1,0 +1,307 @@
+version: '3.8'
+
+services:
+  # 🧠 Torre Suprema Memory Database - PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: torre-suprema-db
+    environment:
+      POSTGRES_DB: torre_suprema_memory
+      POSTGRES_USER: torre_admin
+      POSTGRES_PASSWORD: suprema_power_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../src/core/database-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - torre-suprema
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U torre_admin -d torre_suprema_memory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🚀 Redis - Cache e Sessões  
+  redis:
+    image: redis:7-alpine
+    container_name: torre-suprema-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    networks:
+      - torre-suprema
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # 📨 Kafka - Message Broker
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: torre-suprema-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    networks:
+      - torre-suprema
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: torre-suprema-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - torre-suprema
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # 📊 Elasticsearch - Logs e Analytics
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: torre-suprema-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - torre-suprema
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # 📈 Grafana - Dashboard e Métricas
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: torre-suprema-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=suprema2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - torre-suprema
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # 🎯 Prometheus - Métricas
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: torre-suprema-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+
+  # 🚀 Torre Suprema API - Core Application
+  torre-suprema-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: torre-suprema-api
+    ports:
+      - "3001:3001"
+      - "8080:8080"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://torre_admin:suprema_power_2024@postgres:5432/torre_suprema_memory
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:29092
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      JWT_SECRET: torre_suprema_jwt_secret_ultra_secure_2024
+      PORT: 3001
+      WEBSOCKET_PORT: 8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 🎨 Torre Suprema Dashboard - Frontend
+  torre-suprema-dashboard:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: torre-suprema-dashboard
+    ports:
+      - "3002:3002"
+    environment:
+      REACT_APP_API_URL: http://localhost:3001
+      REACT_APP_WEBSOCKET_URL: ws://localhost:8080
+      REACT_APP_GRAFANA_URL: http://localhost:3000
+    depends_on:
+      - torre-suprema-api
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+
+  # 🔧 MCP Server Manager - Gerenciador de Conexões MCP
+  mcp-manager:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.mcp
+    container_name: torre-suprema-mcp-manager
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://torre_admin:suprema_power_2024@postgres:5432/torre_suprema_memory
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+    volumes:
+      - ./mcp-configs:/app/configs
+
+  # 🤖 Agent Pool - Pool de Agentes
+  agent-pool:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.agents
+    container_name: torre-suprema-agent-pool
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://torre_admin:suprema_power_2024@postgres:5432/torre_suprema_memory
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:29092
+      ORCHESTRATOR_URL: http://torre-suprema-api:3001
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - torre-suprema-api
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+    scale: 3  # 3 instâncias do pool de agentes
+
+  # 🔍 Log Aggregator - Coleta de Logs
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.10.0
+    container_name: torre-suprema-filebeat
+    user: root
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+
+  # 🎭 Nginx - Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: torre-suprema-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - torre-suprema-api
+      - torre-suprema-dashboard
+    networks:
+      - torre-suprema
+    restart: unless-stopped
+
+# 📦 Volumes Persistentes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  kafka_data:
+    driver: local
+  zookeeper_data:
+    driver: local
+  zookeeper_logs:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  grafana_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+# 🌐 Network
+networks:
+  torre-suprema:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
