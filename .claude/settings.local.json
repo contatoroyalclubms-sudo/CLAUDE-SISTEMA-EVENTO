@@ -7,7 +7,8 @@
       "Bash(where psql)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(\"AUTO-DEPLOY-SCRIPT.bat\")"
+      "Bash(\"AUTO-DEPLOY-SCRIPT.bat\")",
+      "WebFetch(domain:supabase.com)"
     ],
     "deny": [],
     "ask": []
