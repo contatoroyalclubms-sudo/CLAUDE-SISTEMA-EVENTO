@@ -143,6 +143,7 @@ function testProjectIntegration() {
     
     // Caminhos para testar
     const testPaths = [
+        "C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\NovoSistema\\paineluniversal",
         "C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\NovoSistema",
         "C:\\Users\\User\\OneDrive\\Desktop\\projetos github",
         // Adicione outros caminhos se necessário

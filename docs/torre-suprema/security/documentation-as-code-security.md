@@ -12,4 +12,4 @@
 - [ ] Audit logging active
 - [ ] Threat detection configured
 
-**Generated:** 2025-08-24T11:29:36.624Z
+**Generated:** 2025-08-24T15:06:02.035Z

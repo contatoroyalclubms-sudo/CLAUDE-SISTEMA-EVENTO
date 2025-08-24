@@ -39,7 +39,10 @@
       "Bash(npm install:*)",
       "Bash(npm run test:*)",
       "Bash(npm run:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal/**)",
+      "Bash(start-optimized.bat)",
+      "Bash(cmd /c:*)"
     ],
     "deny": [],
     "ask": [],

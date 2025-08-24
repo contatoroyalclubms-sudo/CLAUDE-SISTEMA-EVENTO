@@ -10,6 +10,9 @@
     "torre": "ts-node src/torre-suprema-cli.ts",
     "torre-enterprise": "ts-node src/torre-suprema-enterprise-cli.ts",
     "suprema": "ts-node src/torre-suprema-enterprise-cli.ts",
+    "novosistema": "ts-node src/novosistema-integration.ts",
+    "integrate": "ts-node src/novosistema-integration.ts",
+    "validate": "ts-node src/validate-enterprise-features.ts",
     "test": "node src/test-torre.js",
     "lint": "eslint src/**/*.ts"
   },
