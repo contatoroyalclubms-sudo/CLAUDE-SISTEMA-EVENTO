@@ -8,9 +8,44 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(\"AUTO-DEPLOY-SCRIPT.bat\")",
-      "WebFetch(domain:supabase.com)"
+      "WebFetch(domain:supabase.com)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\backend/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\docs\\PROGRESS/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\c\\Users\\User\\OneDrive\\Desktop\\MCP-PROGRAMADOR\\MCP01PROG/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src\\services/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src\\lib/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src\\types/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src\\pages/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src\\components\\auth/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Read(/C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend\\src/**)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(dir)",
+      "Bash(npm install)",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\frontend",
+      "C:\\Users\\User\\OneDrive\\Desktop\\projetos github\\claudesistema\\SistemaUniversalEventos-UltraPerformance-v3.0.0\\paineluniversal\\backend"
+    ]
   }
 }
