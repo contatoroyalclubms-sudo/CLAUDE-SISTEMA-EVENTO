@@ -1,0 +1,334 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Ultra Performance
+  postgres-ultra:
+    image: postgres:15-alpine
+    container_name: postgres-eventos-ultra
+    restart: always
+    environment:
+      POSTGRES_USER: eventos_user
+      POSTGRES_PASSWORD: eventos_2024_secure
+      POSTGRES_DB: eventos_db
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      POSTGRES_HOST_AUTH_METHOD: md5
+    command: >
+      postgres
+      -c shared_buffers=2GB
+      -c effective_cache_size=6GB
+      -c maintenance_work_mem=512MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=10MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c max_worker_processes=8
+      -c max_parallel_workers_per_gather=4
+      -c max_parallel_workers=8
+      -c max_parallel_maintenance_workers=4
+      -c max_connections=500
+      -c log_statement=none
+      -c log_duration=off
+      -c log_min_duration_statement=100
+      -c shared_preload_libraries='pg_stat_statements'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventos_user -d eventos_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eventos-network
+
+  # Redis Cluster Mode
+  redis-master:
+    image: redis:7-alpine
+    container_name: redis-eventos-master
+    restart: always
+    command: >
+      redis-server
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+      --tcp-backlog 511
+      --tcp-keepalive 60
+      --timeout 0
+      --databases 16
+      --loglevel warning
+      --requirepass redis_2024_secure
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eventos-network
+
+  # Redis Replica for Read Operations
+  redis-replica:
+    image: redis:7-alpine
+    container_name: redis-eventos-replica
+    restart: always
+    command: >
+      redis-server
+      --replicaof redis-master 6379
+      --masterauth redis_2024_secure
+      --requirepass redis_2024_secure
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+    depends_on:
+      - redis-master
+    networks:
+      - eventos-network
+
+  # Backend Ultra Performance
+  backend-ultra:
+    build:
+      context: ${BACKEND_PATH:-../../projetos github/claudesistema/SistemaUniversalEventos-UltraPerformance-v3.0.0/paineluniversal/backend}
+      dockerfile: Dockerfile.prod
+    container_name: backend-eventos-ultra
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://eventos_user:eventos_2024_secure@postgres-ultra:5432/eventos_db
+      REDIS_URL: redis://:redis_2024_secure@redis-master:6379/0
+      REDIS_REPLICA_URL: redis://:redis_2024_secure@redis-replica:6379/0
+      SECRET_KEY: ${SECRET_KEY:-ultra-performance-secret-key-2024}
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRATION_HOURS: 24
+      ENVIRONMENT: production
+      DEBUG: "false"
+      WORKERS: 8
+      WORKER_CLASS: uvicorn.workers.UvicornWorker
+      WORKER_CONNECTIONS: 2000
+      MAX_REQUESTS: 10000
+      MAX_REQUESTS_JITTER: 1000
+      TIMEOUT: 30
+      KEEPALIVE: 5
+      GRACEFUL_TIMEOUT: 30
+      ACCESS_LOG: "false"
+      ERROR_LOG: "-"
+      LOG_LEVEL: warning
+      PYTHONOPTIMIZE: 2
+      PYTHONDONTWRITEBYTECODE: 1
+      UV_LOOP: uvloop
+    command: >
+      gunicorn app.main_ultra_performance:app
+      --workers 8
+      --worker-class uvicorn.workers.UvicornWorker
+      --bind 0.0.0.0:8000
+      --max-requests 10000
+      --max-requests-jitter 1000
+      --timeout 30
+      --keepalive 5
+      --access-logfile -
+      --error-logfile -
+      --log-level warning
+      --preload
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres-ultra:
+        condition: service_healthy
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - eventos-network
+    volumes:
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+
+  # Frontend Production Build
+  frontend-ultra:
+    build:
+      context: ${FRONTEND_PATH:-../../projetos github/claudesistema/SistemaUniversalEventos-UltraPerformance-v3.0.0/paineluniversal/frontend}
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: http://backend-ultra:8000
+        VITE_WS_URL: ws://backend-ultra:8000/ws
+    container_name: frontend-eventos-ultra
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend-ultra
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - eventos-network
+
+  # Nginx Load Balancer & Reverse Proxy
+  nginx-ultra:
+    image: nginx:alpine
+    container_name: nginx-eventos-ultra
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/cache:/var/cache/nginx
+    depends_on:
+      - backend-ultra
+      - frontend-ultra
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - eventos-network
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-eventos
+    restart: always
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - eventos-network
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana-eventos
+    restart: always
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: eventos_2024
+      GF_INSTALL_PLUGINS: redis-datasource,postgres-datasource
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - eventos-network
+
+  # Jaeger Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger-eventos
+    restart: always
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: 9411
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    networks:
+      - eventos-network
+
+  # Elasticsearch for Logs
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch-eventos
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - eventos-network
+
+  # Kibana for Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: kibana-eventos
+    restart: always
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - eventos-network
+
+  # MinIO for Object Storage (backups, files)
+  minio:
+    image: minio/minio:latest
+    container_name: minio-eventos
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: eventos_admin
+      MINIO_ROOT_PASSWORD: eventos_2024_secure
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - eventos-network
+
+networks:
+  eventos-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  minio_data:
+    driver: local

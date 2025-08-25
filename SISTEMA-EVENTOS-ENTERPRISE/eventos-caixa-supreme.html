@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVENTOS/CAIXA INTEGRADO - Sistema Supreme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Partículas 3D de fundo */
+        .particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #00D4FF, #8B00FF);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            box-shadow: 0 0 10px rgba(139, 0, 255, 0.5);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Supreme */
+        .header-supreme {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(139, 0, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .title-supreme {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00D4FF, #8B00FF, #FF0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-novo-evento {
+            background: linear-gradient(135deg, #8B00FF, #FF0080);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-novo-evento:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-novo-evento:hover:before {
+            left: 100%;
+        }
+
+        .btn-novo-evento:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 0, 255, 0.6);
+        }
+
+        .search-supreme {
+            position: relative;
+        }
+
+        .search-supreme input {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50px;
+            padding: 12px 20px 12px 45px;
+            color: white;
+            font-size: 0.95rem;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-supreme input:focus {
+            outline: none;
+            border-color: #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00D4FF;
+        }
+
+        /* Métricas Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(30, 30, 40, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid transparent;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--card-color), transparent);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--card-color);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-card.blue { --card-color: #00D4FF; }
+        .metric-card.purple { --card-color: #8B00FF; }
+        .metric-card.pink { --card-color: #FF0080; }
+        .metric-card.green { --card-color: #00FF88; }
+        .metric-card.yellow { --card-color: #FFD700; }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--card-color);
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Calendário Interativo */
+        .calendar-section {
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .year-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .year-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00D4FF, #8B00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-arrow {
+            background: rgba(139, 0, 255, 0.2);
+            border: 1px solid rgba(139, 0, 255, 0.4);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(139, 0, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .months-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .month-tab {
+            padding: 10px 20px;
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .month-tab.active {
+            background: linear-gradient(135deg, #8B00FF, #FF0080);
+            border-color: transparent;
+            box-shadow: 0 5px 20px rgba(139, 0, 255, 0.4);
+        }
+
+        .month-tab:hover:not(.active) {
+            border-color: #8B00FF;
+            transform: translateY(-2px);
+        }
+
+        /* Filtros de Status */
+        .filters-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 12px 25px;
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .filter-pill.active {
+            background: linear-gradient(135deg, #00D4FF, #8B00FF);
+            border-color: transparent;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .filter-pill:hover:not(.active) {
+            border-color: #00D4FF;
+            transform: translateY(-2px);
+        }
+
+        /* Lista de Eventos */
+        .events-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .event-card {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 150px 1fr auto;
+            gap: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(139, 0, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-card:hover::before {
+            opacity: 1;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: #8B00FF;
+            box-shadow: 0 20px 50px rgba(139, 0, 255, 0.3);
+        }
+
+        .event-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #8B00FF, #FF0080);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            overflow: hidden;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00D4FF, #8B00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .event-datetime {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .status-badge.happening {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00FF88;
+            color: #00FF88;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .event-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .mini-metric {
+            text-align: center;
+        }
+
+        .mini-metric-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00D4FF;
+        }
+
+        .mini-metric-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        .event-stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(139, 0, 255, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #8B00FF;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .event-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #8B00FF, #FF0080);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.4);
+        }
+
+        .btn-enter:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(139, 0, 255, 0.6);
+        }
+
+        /* Modal Criar Evento */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.98), rgba(40, 20, 60, 0.98));
+            border: 1px solid rgba(139, 0, 255, 0.4);
+            border-radius: 30px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 30px 60px rgba(139, 0, 255, 0.4);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00D4FF, #8B00FF, #FF0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-modal {
+            background: rgba(255, 0, 128, 0.2);
+            border: 1px solid #FF0080;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #FF0080;
+            font-size: 1.5rem;
+        }
+
+        .close-modal:hover {
+            background: #FF0080;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00D4FF;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, #00D4FF, transparent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background: rgba(30, 30, 40, 1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(139, 0, 255, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(139, 0, 255, 0.05);
+        }
+
+        .upload-area:hover {
+            border-color: #8B00FF;
+            background: rgba(139, 0, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #8B00FF;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .attractions-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .attraction-item {
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #00D4FF, #00FF88);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .form-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: #8B00FF;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            transform: translateX(30px);
+            background: #00D4FF;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(139, 0, 255, 0.2);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #FF0080;
+            border: 1px solid #FF0080;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 0, 128, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #00D4FF, #8B00FF, #FF0080);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(139, 0, 255, 0.6);
+        }
+
+        /* Dashboard do Evento */
+        .event-dashboard {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .event-dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(40, 20, 60, 0.95));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 0, 255, 0.4);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-status-live {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00FF88;
+            border-radius: 50px;
+            animation: pulse 2s infinite;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #00FF88;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .dashboard-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-control {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-pause {
+            background: rgba(255, 204, 0, 0.2);
+            border: 1px solid #FFCC00;
+            color: #FFCC00;
+        }
+
+        .btn-finish {
+            background: rgba(255, 0, 128, 0.2);
+            border: 1px solid #FF0080;
+            color: #FF0080;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .live-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .live-metric-card {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--metric-color), transparent);
+        }
+
+        .live-metric-title {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .live-metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--metric-color);
+            text-shadow: 0 0 20px currentColor;
+            margin-bottom: 10px;
+        }
+
+        .live-metric-change {
+            font-size: 0.9rem;
+            color: #00FF88;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00D4FF;
+            margin-bottom: 20px;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: calc(100% - 50px);
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.1), rgba(0, 212, 255, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quick-action-btn {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .quick-action-btn:hover {
+            border-color: #8B00FF;
+            background: rgba(139, 0, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 0, 255, 0.3);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00D4FF, #8B00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .quick-action-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .title-supreme {
+                font-size: 1.8rem;
+            }
+
+            .search-supreme input {
+                width: 100%;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .event-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .event-image {
+                margin: 0 auto;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(139, 0, 255, 0.2);
+            border-top-color: #8B00FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.95), rgba(0, 212, 255, 0.95));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(139, 0, 255, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas de fundo -->
+    <div class="particles-bg" id="particles"></div>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Header Supreme -->
+        <header class="header-supreme">
+            <div class="header-content">
+                <h1 class="title-supreme">EVENTOS/CAIXA INTEGRADO</h1>
+                <div class="header-actions">
+                    <button class="btn-novo-evento" onclick="openCreateModal()">
+                        ➕ NOVO EVENTO
+                    </button>
+                    <button class="btn-novo-evento" style="background: linear-gradient(135deg, #00D4FF, #00FF88);">
+                        📊 TODOS OS EVENTOS
+                    </button>
+                    <div class="search-supreme">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Buscar eventos..." id="searchInput">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Métricas Superiores -->
+        <div class="metrics-grid">
+            <div class="metric-card blue">
+                <div class="metric-value" data-counter="15">0</div>
+                <div class="metric-label">Eventos</div>
+            </div>
+            <div class="metric-card purple">
+                <div class="metric-value" data-counter="440">0</div>
+                <div class="metric-label">Clientes do Mês</div>
+            </div>
+            <div class="metric-card pink">
+                <div class="metric-value" data-counter="356551.67">R$ 0</div>
+                <div class="metric-label">Faturamento do Mês</div>
+            </div>
+            <div class="metric-card green">
+                <div class="metric-value" data-counter="380.32">R$ 0</div>
+                <div class="metric-label">Ticket Médio de Consumo</div>
+            </div>
+            <div class="metric-card yellow">
+                <div class="metric-value" data-counter="54.18">R$ 0</div>
+                <div class="metric-label">Ticket Médio de Ingresso</div>
+            </div>
+        </div>
+
+        <!-- Calendário Interativo -->
+        <div class="calendar-section">
+            <div class="calendar-header">
+                <div class="year-nav">
+                    <div class="nav-arrow">◀</div>
+                    <div class="year-text">2025</div>
+                    <div class="nav-arrow">▶</div>
+                </div>
+                <div class="months-tabs">
+                    <div class="month-tab">Jan</div>
+                    <div class="month-tab">Fev</div>
+                    <div class="month-tab">Mar</div>
+                    <div class="month-tab">Abr</div>
+                    <div class="month-tab">Mai</div>
+                    <div class="month-tab">Jun</div>
+                    <div class="month-tab">Jul</div>
+                    <div class="month-tab active">Ago</div>
+                    <div class="month-tab">Set</div>
+                    <div class="month-tab">Out</div>
+                    <div class="month-tab">Nov</div>
+                    <div class="month-tab">Dez</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros de Status -->
+        <div class="filters-section">
+            <div class="filter-pill active">Todos</div>
+            <div class="filter-pill">📅 Programado</div>
+            <div class="filter-pill">▶️ Acontecendo</div>
+            <div class="filter-pill">✅ Encerrado</div>
+        </div>
+
+        <!-- Lista de Eventos -->
+        <div class="events-list" id="eventsList">
+            <!-- Evento Card Example -->
+            <div class="event-card">
+                <div class="event-image">
+                    🎵
+                </div>
+                <div class="event-info">
+                    <h3 class="event-title">PAGODINHA DA ÚNICA</h3>
+                    <div class="event-datetime">
+                        📅 24/08/25 - 20:45 até 25/08/25 - 07:00
+                    </div>
+                    <div class="status-badge happening">
+                        <span class="live-dot"></span>
+                        Acontecendo agora
+                    </div>
+                    <div class="event-metrics">
+                        <div class="mini-metric">
+                            <div class="mini-metric-value">R$ 15.280</div>
+                            <div class="mini-metric-label">Faturamento</div>
+                        </div>
+                        <div class="mini-metric">
+                            <div class="mini-metric-value">R$ 30.82</div>
+                            <div class="mini-metric-label">Ticket Consumo</div>
+                        </div>
+                        <div class="mini-metric">
+                            <div class="mini-metric-value">R$ 45.00</div>
+                            <div class="mini-metric-label">Ticket Ingresso</div>
+                        </div>
+                    </div>
+                    <div class="event-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">137</span>
+                            <span class="stat-label">Entrada Geral</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">30</span>
+                            <span class="stat-label">Nome na Lista</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">167</span>
+                            <span class="stat-label">Total Vendidos</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-actions">
+                    <button class="btn-enter" onclick="openEventDashboard('PAGODINHA DA ÚNICA')">
+                        ENTRAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mais eventos... -->
+        </div>
+    </div>
+
+    <!-- Modal Criar Evento -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">ADICIONAR EVENTO</h2>
+                <div class="close-modal" onclick="closeCreateModal()">✕</div>
+            </div>
+
+            <form id="createEventForm">
+                <!-- Informações Básicas -->
+                <div class="form-section">
+                    <h3 class="section-title">Informações Básicas</h3>
+                    <div class="form-group">
+                        <label class="form-label">Nome do Evento</label>
+                        <input type="text" class="form-input" placeholder="Ex: PAGODINHA DA ÚNICA" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-textarea" placeholder="Descreva o evento..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Imagem do Evento</label>
+                        <div class="upload-area">
+                            <div class="upload-icon">📸</div>
+                            <p>Arraste uma imagem ou clique para fazer upload</p>
+                            <input type="file" hidden>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horário do Evento -->
+                <div class="form-section">
+                    <h3 class="section-title">Horário do Evento</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Data/Hora Início</label>
+                            <input type="datetime-local" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Data/Hora Término</label>
+                            <input type="datetime-local" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Período de Venda -->
+                <div class="form-section">
+                    <h3 class="section-title">Período de Venda</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Início das Vendas</label>
+                            <input type="datetime-local" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Término das Vendas</label>
+                            <input type="datetime-local" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atrações -->
+                <div class="form-section">
+                    <h3 class="section-title">Atrações</h3>
+                    <div class="attractions-list">
+                        <div class="attraction-item">
+                            <input type="text" class="form-input" placeholder="Nome da atração">
+                            <button type="button" class="btn-add">
+                                📸 Imagem
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add" style="margin-top: 15px;">
+                        ➕ Adicionar Atração
+                    </button>
+                </div>
+
+                <!-- Controle de Caixa/Promoters -->
+                <div class="form-section">
+                    <h3 class="section-title">Controle de Caixa</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Meta de Faturamento</label>
+                            <input type="text" class="form-input" placeholder="R$ 0,00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Comissão Promoters (%)</label>
+                            <input type="number" class="form-input" placeholder="10" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações Avançadas -->
+                <div class="form-section">
+                    <h3 class="section-title">Configurações Avançadas</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Limite de Público</label>
+                            <input type="number" class="form-input" placeholder="500">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Preço do Ingresso</label>
+                            <input type="text" class="form-input" placeholder="R$ 50,00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>Check-in Automático</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>Relatórios em Tempo Real</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">CRIAR EVENTO</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard do Evento (Initially Hidden) -->
+    <div class="event-dashboard" id="eventDashboard">
+        <!-- Dashboard content will be dynamically added -->
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage">Evento criado com sucesso!</span>
+    </div>
+
+    <script>
+        // Criar partículas de fundo
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Animação de contadores
+        function animateCounters() {
+            const counters = document.querySelectorAll('[data-counter]');
+            
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-counter'));
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        if (counter.textContent.includes('R$')) {
+                            counter.textContent = `R$ ${current.toFixed(2).replace('.', ',')}`;
+                        } else {
+                            counter.textContent = Math.floor(current);
+                        }
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        if (counter.textContent.includes('R$')) {
+                            counter.textContent = `R$ ${target.toFixed(2).replace('.', ',')}`;
+                        } else {
+                            counter.textContent = target;
+                        }
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Modal functions
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+        }
+
+        // Dashboard do Evento
+        function openEventDashboard(eventName) {
+            const dashboardHTML = `
+                <div class="container">
+                    <button class="btn-novo-evento" onclick="closeDashboard()" style="margin-bottom: 20px;">
+                        ← Voltar aos Eventos
+                    </button>
+                    
+                    <div class="dashboard-header">
+                        <div class="event-status-live">
+                            <h2 class="title-supreme" style="font-size: 1.8rem;">EVENTO: ${eventName}</h2>
+                            <div class="live-indicator">
+                                <span class="live-dot"></span>
+                                <span>AO VIVO</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-controls">
+                            <button class="btn-control btn-pause">⏸ Pausar Vendas</button>
+                            <button class="btn-control btn-finish">🏁 Finalizar Evento</button>
+                        </div>
+                    </div>
+
+                    <div class="live-metrics-grid">
+                        <div class="live-metric-card" style="--metric-color: #00D4FF;">
+                            <div class="live-metric-title">Vendas em Tempo Real</div>
+                            <div class="live-metric-value">R$ 45.280</div>
+                            <div class="live-metric-change">↑ +R$ 1.250 (última hora)</div>
+                        </div>
+                        <div class="live-metric-card" style="--metric-color: #8B00FF;">
+                            <div class="live-metric-title">Pessoas Dentro</div>
+                            <div class="live-metric-value">287</div>
+                            <div class="live-metric-change">↑ +42 (últimos 30min)</div>
+                        </div>
+                        <div class="live-metric-card" style="--metric-color: #00FF88;">
+                            <div class="live-metric-title">Ticket Médio Atual</div>
+                            <div class="live-metric-value">R$ 157.70</div>
+                            <div class="live-metric-change">↑ +R$ 12.30</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3 class="chart-title">📊 Entrada por Hora</h3>
+                            <div class="chart-placeholder">Gráfico de Entradas</div>
+                        </div>
+                        <div class="chart-card">
+                            <h3 class="chart-title">💰 Vendas por Produto</h3>
+                            <div class="chart-placeholder">Gráfico de Vendas</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <a href="#" class="quick-action-btn">
+                            <div class="quick-action-icon">💳</div>
+                            <div class="quick-action-label">PDV</div>
+                        </a>
+                        <a href="#" class="quick-action-btn">
+                            <div class="quick-action-icon">✅</div>
+                            <div class="quick-action-label">Check-in</div>
+                        </a>
+                        <a href="#" class="quick-action-btn">
+                            <div class="quick-action-icon">📊</div>
+                            <div class="quick-action-label">Relatórios</div>
+                        </a>
+                        <a href="#" class="quick-action-btn">
+                            <div class="quick-action-icon">👥</div>
+                            <div class="quick-action-label">Promoters</div>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            const dashboard = document.getElementById('eventDashboard');
+            dashboard.innerHTML = dashboardHTML;
+            dashboard.classList.add('active');
+            
+            // Esconder lista de eventos
+            document.querySelector('.container').style.display = 'none';
+        }
+
+        function closeDashboard() {
+            document.getElementById('eventDashboard').classList.remove('active');
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Form submission
+        document.getElementById('createEventForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            closeCreateModal();
+            showToast('Evento criado com sucesso!');
+            // Aqui você adicionaria a lógica para salvar o evento
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implementar busca de eventos
+        });
+
+        // Filter pills
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                // Implementar filtro de eventos
+            });
+        });
+
+        // Month tabs
+        document.querySelectorAll('.month-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.month-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Implementar navegação por mês
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            animateCounters();
+        });
+
+        // WebSocket simulation for real-time updates
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // Atualizar métricas em tempo real
+                const metrics = document.querySelectorAll('.live-metric-value');
+                metrics.forEach(metric => {
+                    if (metric.textContent.includes('R$')) {
+                        const current = parseFloat(metric.textContent.replace('R$ ', '').replace('.', '').replace(',', '.'));
+                        const newValue = current + (Math.random() * 100);
+                        metric.textContent = `R$ ${newValue.toFixed(2).replace('.', ',')}`;
+                    }
+                });
+            }, 5000);
+        }
+
+        // Simular atualizações quando no dashboard
+        if (document.querySelector('.event-dashboard.active')) {
+            simulateRealTimeUpdates();
+        }
+    </script>
+</body>
+</html>

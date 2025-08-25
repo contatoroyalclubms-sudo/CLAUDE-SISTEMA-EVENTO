@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA DE COMANDAS SUPREME - Controle Total</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00D4FF;
+            --neon-purple: #8B00FF;
+            --neon-pink: #FF0080;
+            --neon-green: #00FF88;
+            --neon-yellow: #FFD700;
+            --neon-orange: #FF6B00;
+            --neon-red: #FF0044;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(20, 20, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #0a001a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Partículas 3D Animadas */
+        .particles-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float3D 35s infinite linear;
+            box-shadow: 0 0 25px var(--neon-blue), 0 0 50px var(--neon-purple);
+        }
+
+        @keyframes float3D {
+            0% {
+                transform: translate3d(0, 100vh, -500px) rotateX(0deg) rotateY(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate3d(100vw, -100vh, 500px) rotateX(720deg) rotateY(360deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Container Principal */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Inteligente */
+        .header-intelligent {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(40, 20, 60, 0.95));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 25px 50px rgba(139, 0, 255, 0.4);
+            animation: slideDown 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .title-supreme {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink), var(--neon-green));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s ease infinite;
+            text-shadow: 0 0 40px rgba(139, 0, 255, 0.6);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .breadcrumb {
+            color: var(--neon-blue);
+            font-size: 0.95rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .counter-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 50px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--neon-green);
+            border-radius: 50px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Filtros Avançados */
+        .filters-section {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filters-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation: scanLine 3s linear infinite;
+        }
+
+        @keyframes scanLine {
+            to { left: 100%; }
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            background: rgba(30, 30, 40, 0.9);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px 20px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5),
+                        inset 0 0 15px rgba(0, 212, 255, 0.1);
+        }
+
+        .filter-select {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:hover {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(139, 0, 255, 0.4);
+        }
+
+        .date-input {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 14px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(139, 0, 255, 0.4);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-search::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn-search:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(139, 0, 255, 0.5);
+        }
+
+        /* Toggle Switches */
+        .toggles-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(30, 30, 40, 0.6);
+            border-radius: 50px;
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-container:hover {
+            border-color: var(--toggle-color);
+            box-shadow: 0 0 20px rgba(139, 0, 255, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(50, 50, 60, 0.8);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .toggle-switch.active {
+            background: var(--toggle-color);
+            box-shadow: 0 0 15px var(--toggle-color);
+        }
+
+        .toggle-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Tabela de Comandas */
+        .table-section {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            animation: fadeInUp 1s ease backwards 0.3s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .comandas-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .comandas-table thead {
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 212, 255, 0.2));
+        }
+
+        .comandas-table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(139, 0, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .comandas-table tbody tr {
+            background: rgba(30, 30, 40, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .comandas-table tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .comandas-table tbody tr:hover {
+            background: rgba(139, 0, 255, 0.1);
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(139, 0, 255, 0.3);
+        }
+
+        .comandas-table tbody tr:hover::before {
+            background: var(--neon-purple);
+        }
+
+        .comandas-table td {
+            padding: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(139, 0, 255, 0.1);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.aberta {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            animation: statusPulse 2s infinite;
+        }
+
+        .status-badge.fechada {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .status-badge.bloqueada {
+            background: rgba(255, 0, 68, 0.2);
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            animation: statusPulse 1.5s infinite;
+        }
+
+        .status-badge.fiado {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+        }
+
+        .status-badge.paga {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Operações */
+        .operations {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-operation {
+            padding: 8px;
+            background: rgba(139, 0, 255, 0.1);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 10px;
+            color: var(--neon-purple);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .btn-operation:hover {
+            background: var(--neon-purple);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(139, 0, 255, 0.5);
+        }
+
+        /* Cartão ROYAL 3D */
+        .card-container {
+            perspective: 1000px;
+            margin: 30px auto;
+            width: 350px;
+            height: 220px;
+        }
+
+        .card-royal {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .card-royal:hover {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            position: relative;
+        }
+
+        .card-front::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: cardShine 3s linear infinite;
+        }
+
+        @keyframes cardShine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-logo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: auto;
+        }
+
+        .royal-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .crown-icon {
+            font-size: 1.5rem;
+        }
+
+        .meep-logo {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .card-number {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-top: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .card-info {
+            background: rgba(30, 30, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            width: 350px;
+        }
+
+        .info-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .info-warning {
+            color: var(--neon-yellow);
+            font-weight: 600;
+        }
+
+        .info-danger {
+            color: var(--neon-red);
+            font-weight: 600;
+        }
+
+        /* Modal de Detalhes */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.98), rgba(40, 20, 60, 0.98));
+            border: 1px solid rgba(139, 0, 255, 0.4);
+            border-radius: 30px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 30px 60px rgba(139, 0, 255, 0.4);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(139, 0, 255, 0.2);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-modal {
+            background: rgba(255, 0, 128, 0.2);
+            border: 1px solid var(--neon-pink);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--neon-pink);
+            font-size: 1.5rem;
+        }
+
+        .close-modal:hover {
+            background: var(--neon-pink);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .client-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .client-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.4);
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            margin-bottom: 5px;
+        }
+
+        .client-details {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Timeline de Consumo */
+        .timeline-section {
+            margin-top: 30px;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--neon-purple);
+            margin-bottom: 20px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 25px;
+            animation: slideInLeft 0.5s ease backwards;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .timeline-content {
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            border-color: var(--neon-purple);
+            box-shadow: 0 5px 20px rgba(139, 0, 255, 0.3);
+        }
+
+        .timeline-time {
+            font-size: 0.85rem;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+        }
+
+        .timeline-product {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .timeline-details {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .timeline-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--neon-yellow);
+            margin-top: 5px;
+        }
+
+        /* Estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-purple);
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Loading State */
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 25%, rgba(139, 0, 255, 0.2) 50%, rgba(139, 0, 255, 0.1) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .toggles-section {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title-supreme {
+                font-size: 2rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .comandas-table {
+                font-size: 0.85rem;
+            }
+
+            .comandas-table th,
+            .comandas-table td {
+                padding: 10px 5px;
+            }
+
+            .operations {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .card-container {
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Customizada */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: -400px;
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.95), rgba(0, 212, 255, 0.95));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(139, 0, 255, 0.5);
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toast.show {
+            right: 30px;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+            animation: toastPulse 1s infinite;
+        }
+
+        @keyframes toastPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas 3D Container -->
+    <div class="particles-3d" id="particles"></div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Header Inteligente -->
+        <header class="header-intelligent">
+            <div class="header-content">
+                <div>
+                    <h1 class="title-supreme">SISTEMA DE COMANDAS SUPREME</h1>
+                    <div class="breadcrumb">Mapa da operação > Comandas</div>
+                </div>
+                <div class="header-info">
+                    <div class="counter-badge">
+                        <span style="font-weight: 600;" id="activeCount">142 comandas ativas</span>
+                    </div>
+                    <div class="status-online">
+                        <span class="status-dot"></span>
+                        <span style="font-weight: 600;">Sistema Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filtros Avançados -->
+        <section class="filters-section">
+            <div class="filters-grid">
+                <input type="text" class="search-input" placeholder="🔍 CPF/Tag/Número/Nome - Scanner automático..." id="searchInput">
+                
+                <select class="filter-select">
+                    <option>📅 Hoje</option>
+                    <option>📅 Ontem</option>
+                    <option>📅 Última semana</option>
+                    <option>📅 Último mês</option>
+                    <option>📅 Personalizado</option>
+                </select>
+
+                <input type="date" class="date-input" placeholder="Data inicial">
+                <input type="date" class="date-input" placeholder="Data final">
+                
+                <button class="btn-search" onclick="searchComandas()">
+                    🔍 Buscar
+                </button>
+            </div>
+
+            <div class="toggles-section">
+                <div class="toggle-container" style="--toggle-color: var(--neon-green);">
+                    <label class="toggle-switch active">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Somente contas ativas</span>
+                </div>
+
+                <div class="toggle-container" style="--toggle-color: var(--neon-blue);">
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Somente contas abertas</span>
+                </div>
+
+                <div class="toggle-container" style="--toggle-color: var(--neon-red);">
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Somente contas bloqueadas</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabela de Comandas -->
+        <section class="table-section">
+            <div class="table-header">
+                <h3 class="table-title">📋 COMANDAS ATIVAS</h3>
+            </div>
+
+            <table class="comandas-table">
+                <thead>
+                    <tr>
+                        <th>👤 Cliente/Nome</th>
+                        <th>💳 Cartão/Tag</th>
+                        <th>📊 Status</th>
+                        <th>💰 Valor Total</th>
+                        <th>🕐 Último Consumo</th>
+                        <th>⚙️ Operações</th>
+                    </tr>
+                </thead>
+                <tbody id="comandasTableBody">
+                    <tr>
+                        <td>João Silva</td>
+                        <td><strong>SE236908</strong> - ROYAL</td>
+                        <td>
+                            <span class="status-badge aberta">
+                                <span class="status-dot"></span>
+                                Aberta
+                            </span>
+                        </td>
+                        <td style="color: var(--neon-yellow); font-weight: 600;">R$ 285,90</td>
+                        <td>23:45 - Red Bull</td>
+                        <td>
+                            <div class="operations">
+                                <button class="btn-operation" onclick="viewDetails('João Silva')" title="Ver Detalhes">🔍</button>
+                                <button class="btn-operation" title="Adicionar Consumo">➕</button>
+                                <button class="btn-operation" title="Fechar Conta">💰</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Maria Santos</td>
+                        <td><strong>SE147852</strong> - ROYAL</td>
+                        <td>
+                            <span class="status-badge fechada">
+                                <span class="status-dot"></span>
+                                Fechada
+                            </span>
+                        </td>
+                        <td style="color: var(--neon-yellow); font-weight: 600;">R$ 156,50</td>
+                        <td>22:30 - Heineken</td>
+                        <td>
+                            <div class="operations">
+                                <button class="btn-operation" onclick="viewDetails('Maria Santos')" title="Ver Detalhes">🔍</button>
+                                <button class="btn-operation" title="Reabrir Conta">🔄</button>
+                                <button class="btn-operation" title="Pagar">💳</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pedro Costa</td>
+                        <td><strong>SE369741</strong> - ROYAL</td>
+                        <td>
+                            <span class="status-badge bloqueada">
+                                <span class="status-dot"></span>
+                                Bloqueada
+                            </span>
+                        </td>
+                        <td style="color: var(--neon-yellow); font-weight: 600;">R$ 450,00</td>
+                        <td>21:15 - Whisky 12 anos</td>
+                        <td>
+                            <div class="operations">
+                                <button class="btn-operation" onclick="viewDetails('Pedro Costa')" title="Ver Detalhes">🔍</button>
+                                <button class="btn-operation" title="Desbloquear">🔓</button>
+                                <button class="btn-operation" title="Relatório">📊</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ana Oliveira</td>
+                        <td><strong>SE258963</strong> - ROYAL</td>
+                        <td>
+                            <span class="status-badge fiado">
+                                <span class="status-dot"></span>
+                                Fiado
+                            </span>
+                        </td>
+                        <td style="color: var(--neon-yellow); font-weight: 600;">R$ 89,90</td>
+                        <td>20:45 - Corona</td>
+                        <td>
+                            <div class="operations">
+                                <button class="btn-operation" onclick="viewDetails('Ana Oliveira')" title="Ver Detalhes">🔍</button>
+                                <button class="btn-operation" title="Adicionar Consumo">➕</button>
+                                <button class="btn-operation" title="Cobrar">💰</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Carlos Lima</td>
+                        <td><strong>SE741852</strong> - ROYAL</td>
+                        <td>
+                            <span class="status-badge paga">
+                                <span class="status-dot"></span>
+                                Paga
+                            </span>
+                        </td>
+                        <td style="color: var(--neon-green); font-weight: 600;">R$ 320,00</td>
+                        <td>19:30 - Combo Premium</td>
+                        <td>
+                            <div class="operations">
+                                <button class="btn-operation" onclick="viewDetails('Carlos Lima')" title="Ver Detalhes">🔍</button>
+                                <button class="btn-operation" title="Recibo">🧾</button>
+                                <button class="btn-operation" title="Nova Comanda">🔄</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Cartão ROYAL 3D -->
+        <div class="card-container">
+            <div class="card-royal">
+                <div class="card-face card-front">
+                    <div class="card-logo">
+                        <div class="royal-logo">
+                            <span class="crown-icon">👑</span>
+                            ROYAL
+                        </div>
+                        <div class="meep-logo">
+                            meep 📶
+                        </div>
+                    </div>
+                    <div class="card-number">SE 236908</div>
+                </div>
+                <div class="card-face card-back">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: var(--neon-yellow); margin-bottom: 15px;">
+                            CARTÃO PREMIUM
+                        </div>
+                        <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5;">
+                            Acesso VIP<br>
+                            Cashback 5%<br>
+                            Atendimento Prioritário
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações do Cartão -->
+        <div class="card-info">
+            <div class="info-title">ℹ️ INFORMAÇÕES IMPORTANTES</div>
+            <div class="info-text">Este cartão é pessoal e intransferível.</div>
+            <div class="info-text info-warning">⚠️ Em caso de roubo, perda ou furto, comunicar imediatamente.</div>
+            <div class="info-text info-danger">💰 Taxa de bloqueio: R$ 100,00</div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div class="modal-overlay" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">DETALHES DA COMANDA</h2>
+                <div class="close-modal" onclick="closeModal()">✕</div>
+            </div>
+
+            <div class="client-header">
+                <div class="client-avatar">JS</div>
+                <div class="client-info">
+                    <div class="client-name" id="clientName">João Silva</div>
+                    <div class="client-details">
+                        CPF: ***.***789-** | Cartão: SE236908 | Status: <span style="color: var(--neon-green);">Ativo</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">R$ 285,90</div>
+                    <div class="stat-label">Total Consumido</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Produtos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3h 45m</div>
+                    <div class="stat-label">Tempo no Local</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">R$ 23,82</div>
+                    <div class="stat-label">Ticket Médio</div>
+                </div>
+            </div>
+
+            <!-- Timeline de Consumo -->
+            <div class="timeline-section">
+                <h3 class="timeline-title">📊 HISTÓRICO DE CONSUMO</h3>
+                <div class="timeline">
+                    <div class="timeline-item" style="animation-delay: 0.1s;">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">23:45</div>
+                            <div class="timeline-product">Red Bull Energy</div>
+                            <div class="timeline-details">Operador: Carlos | PDV-01</div>
+                            <div class="timeline-value">R$ 25,00</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" style="animation-delay: 0.2s;">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">22:30</div>
+                            <div class="timeline-product">Heineken 600ml</div>
+                            <div class="timeline-details">Operador: Maria | PDV-02</div>
+                            <div class="timeline-value">R$ 22,00</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" style="animation-delay: 0.3s;">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">21:15</div>
+                            <div class="timeline-product">Combo Whisky Premium</div>
+                            <div class="timeline-details">Operador: João | PDV-01</div>
+                            <div class="timeline-value">R$ 89,90</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" style="animation-delay: 0.4s;">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">20:00</div>
+                            <div class="timeline-product">Entrada VIP</div>
+                            <div class="timeline-details">Check-in automático</div>
+                            <div class="timeline-value">R$ 50,00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">🔔</span>
+        <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // Criar partículas 3D
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--neon-green)'];
+            
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 35 + 's';
+                particle.style.animationDuration = (30 + Math.random() * 15) + 's';
+                particle.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random() * colors.length)]} 0%, transparent 70%)`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Toggle switches
+        document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const switchElement = this.parentElement;
+                if (this.checked) {
+                    switchElement.classList.add('active');
+                } else {
+                    switchElement.classList.remove('active');
+                }
+                filterComandas();
+            });
+        });
+
+        // Busca de comandas
+        function searchComandas() {
+            showToast('Buscando comandas...');
+            // Simular loading
+            const tbody = document.getElementById('comandasTableBody');
+            tbody.innerHTML = '<tr><td colspan="6"><div class="loading-skeleton"></div></td></tr>';
+            
+            setTimeout(() => {
+                // Restaurar tabela após loading
+                location.reload();
+            }, 1500);
+        }
+
+        // Filtrar comandas
+        function filterComandas() {
+            showToast('Filtros aplicados!');
+            // Implementar lógica de filtro real aqui
+        }
+
+        // Ver detalhes da comanda
+        function viewDetails(clientName) {
+            document.getElementById('clientName').textContent = clientName;
+            document.getElementById('detailsModal').classList.add('active');
+            
+            // Atualizar iniciais no avatar
+            const initials = clientName.split(' ').map(n => n[0]).join('');
+            document.querySelector('.client-avatar').textContent = initials;
+        }
+
+        // Fechar modal
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        // Sistema de notificações
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Scanner de cartão simulado
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            // Detectar formato de cartão (SE seguido de números)
+            if (value.startsWith('SE') && value.length === 8) {
+                showToast(`Cartão ${value} detectado!`);
+                // Buscar automaticamente
+                searchComandas();
+            }
+            
+            // Formatar CPF automaticamente
+            if (/^\d+$/.test(value)) {
+                let formatted = value.replace(/\D/g, '');
+                if (formatted.length > 11) formatted = formatted.slice(0, 11);
+                
+                if (formatted.length > 3 && formatted.length <= 6) {
+                    formatted = formatted.slice(0, 3) + '.' + formatted.slice(3);
+                } else if (formatted.length > 6 && formatted.length <= 9) {
+                    formatted = formatted.slice(0, 3) + '.' + formatted.slice(3, 6) + '.' + formatted.slice(6);
+                } else if (formatted.length > 9) {
+                    formatted = formatted.slice(0, 3) + '.' + formatted.slice(3, 6) + '.' + formatted.slice(6, 9) + '-' + formatted.slice(9);
+                }
+                
+                e.target.value = formatted;
+                
+                if (formatted.length === 14) {
+                    showToast('CPF identificado! Buscando cliente...');
+                    searchComandas();
+                }
+            }
+        });
+
+        // Simulação de atualizações em tempo real
+        function simulateRealTimeUpdates() {
+            // Atualizar contador de comandas ativas
+            setInterval(() => {
+                const activeCount = document.getElementById('activeCount');
+                const current = parseInt(activeCount.textContent.match(/\d+/)[0]);
+                const change = Math.floor(Math.random() * 5) - 2;
+                const newCount = Math.max(0, current + change);
+                activeCount.textContent = `${newCount} comandas ativas`;
+                
+                // Animar mudança
+                activeCount.parentElement.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    activeCount.parentElement.style.transform = 'scale(1)';
+                }, 300);
+            }, 10000);
+
+            // Simular nova comanda ocasionalmente
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    showToast('Nova comanda aberta!');
+                }
+            }, 15000);
+        }
+
+        // Operações com comandas
+        document.querySelectorAll('.btn-operation').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.onclick) {
+                    e.stopPropagation();
+                    const operation = this.title;
+                    showToast(`${operation} executado!`);
+                }
+            });
+        });
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+F para focar na busca
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // ESC para fechar modal
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            simulateRealTimeUpdates();
+            
+            // Mensagem de boas-vindas
+            setTimeout(() => {
+                showToast('Sistema de Comandas carregado!');
+            }, 1500);
+        });
+
+        // Click fora do modal para fechar
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

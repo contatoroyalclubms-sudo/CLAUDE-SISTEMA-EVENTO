@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizard Configuração Supreme - Setup Inteligente de Vendas</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --neon-blue: #00D4FF;
+            --neon-purple: #8B00FF;
+            --neon-pink: #FF0080;
+            --neon-green: #00FF88;
+            --neon-yellow: #FFD700;
+            --neon-orange: #FF8C00;
+            --neon-red: #FF0044;
+            --neon-cyan: #00FFE5;
+            --dark-bg: #0A0B1E;
+            --card-bg: rgba(20, 20, 40, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0A0B1E 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Hero Section com Imagem */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23141428;stop-opacity:1" /><stop offset="100%" style="stop-color:%231a1a3e;stop-opacity:1" /></linearGradient></defs><rect width="1920" height="1080" fill="url(%23grad)"/><rect x="800" y="400" width="320" height="280" rx="20" fill="%23222" opacity="0.8"/><rect x="820" y="420" width="280" height="180" rx="10" fill="%23333"/><circle cx="960" cy="510" r="40" fill="%2300D4FF" opacity="0.6"/><rect x="840" y="620" width="240" height="40" rx="5" fill="%23444"/></svg>') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 11, 30, 0.9) 0%, rgba(26, 26, 62, 0.85) 100%);
+            z-index: 1;
+        }
+
+        /* Partículas 3D Animadas */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float3D 30s infinite;
+            opacity: 0.6;
+        }
+
+        .particle:nth-child(odd) {
+            background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%);
+            animation-duration: 35s;
+        }
+
+        .particle:nth-child(even) {
+            background: radial-gradient(circle, var(--neon-pink) 0%, transparent 70%);
+            animation-duration: 40s;
+        }
+
+        @keyframes float3D {
+            0% {
+                transform: translate3d(0, 100vh, 0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate3d(100vw, -100vh, 500px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Content Container */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradientShift 3s ease infinite, typeWriter 2s steps(40) 1s forwards;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid var(--neon-blue);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes typeWriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease-out 2s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .btn-start {
+            padding: 20px 60px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            border-radius: 60px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(139, 0, 255, 0.8);
+            }
+        }
+
+        .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(139, 0, 255, 0.9);
+        }
+
+        .btn-start:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .arrow-icon {
+            animation: slideRight 1s ease-in-out infinite;
+        }
+
+        @keyframes slideRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0A0B1E 0%, #1a1a3e 100%);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .wizard-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .wizard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 50px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-circle {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 30px rgba(139, 0, 255, 0.7);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(139, 0, 255, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(139, 0, 255, 1);
+            }
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+        }
+
+        .progress-step.completed .step-circle::after {
+            content: '✓';
+            animation: checkmark 0.3s ease;
+        }
+
+        @keyframes checkmark {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        .progress-step.active .step-label {
+            color: var(--neon-blue);
+            font-weight: 600;
+        }
+
+        /* Step Content */
+        .step-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 500px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-title {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .step-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+        }
+
+        /* Segment Cards Grid */
+        .segments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .segment-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .segment-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent, rgba(255, 255, 255, 0.05));
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .segment-card:hover::before {
+            opacity: 1;
+        }
+
+        .segment-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .segment-card.selected {
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 212, 255, 0.1));
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .segment-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            animation: checkmark 0.3s ease;
+        }
+
+        .segment-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .segment-card:hover .segment-icon {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .segment-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .segment-preview {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Segmentos com cores específicas */
+        .segment-bares { color: var(--neon-blue); }
+        .segment-restaurantes { color: var(--neon-green); }
+        .segment-baladas { color: var(--neon-purple); }
+        .segment-eventos { color: var(--neon-pink); }
+        .segment-hoteis { color: var(--neon-yellow); }
+        .segment-estadios { color: var(--neon-orange); }
+        .segment-escolas { color: var(--neon-cyan); }
+        .segment-foodpark { color: var(--neon-red); }
+
+        /* Alert Box */
+        .alert-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            color: var(--neon-yellow);
+        }
+
+        .alert-text {
+            flex: 1;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .alert-button {
+            padding: 8px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 8px;
+            color: var(--neon-yellow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .alert-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Auto Configurações */
+        .auto-configs {
+            background: rgba(139, 0, 255, 0.05);
+            border: 1px solid rgba(139, 0, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .auto-configs-title {
+            color: var(--neon-purple);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .config-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .config-check {
+            color: var(--neon-green);
+            font-size: 18px;
+        }
+
+        /* Navigation Buttons */
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn-nav {
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-next:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 0, 255, 0.5);
+        }
+
+        /* Success Screen */
+        .success-container {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .success-icon {
+            font-size: 120px;
+            color: var(--neon-green);
+            animation: successPop 0.5s ease;
+            margin-bottom: 30px;
+        }
+
+        @keyframes successPop {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 36px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .segments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-bar {
+                padding: 0 20px;
+            }
+
+            .step-circle {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .step-label {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="particles-container"></div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">Configure sua gestão de venda de forma simplificada:</h1>
+            <p class="hero-subtitle">Sistema inteligente que se adapta ao seu negócio</p>
+            <button class="btn-start" onclick="startWizard()">
+                Siga o passo a passo e comece a vender
+                <span class="arrow-icon">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Wizard Container -->
+    <div id="wizard-container" class="wizard-container">
+        <div class="wizard-content">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-line">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">①</div>
+                        <div class="step-label">Segmento</div>
+                    </div>
+                    
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">②</div>
+                        <div class="step-label">Configurações</div>
+                    </div>
+                    
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">③</div>
+                        <div class="step-label">Produtos</div>
+                    </div>
+                    
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">④</div>
+                        <div class="step-label">Finalização</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step Content -->
+            <div class="step-content" id="step-content">
+                <!-- Step 1: Segmento -->
+                <div class="step-pane active" data-step="1">
+                    <h2 class="step-title">Qual é o segmento do seu estabelecimento?</h2>
+                    <p class="step-subtitle">Selecione a alternativa que mais representa o seu negócio:</p>
+
+                    <div class="segments-grid">
+                        <div class="segment-card segment-bares" onclick="selectSegment(this, 'bares')">
+                            <div class="segment-icon">🍺</div>
+                            <div class="segment-name">BARES</div>
+                            <div class="segment-preview">PDV otimizado para bebidas</div>
+                        </div>
+
+                        <div class="segment-card segment-restaurantes" onclick="selectSegment(this, 'restaurantes')">
+                            <div class="segment-icon">🍽️</div>
+                            <div class="segment-name">RESTAURANTES</div>
+                            <div class="segment-preview">Gestão completa de pratos</div>
+                        </div>
+
+                        <div class="segment-card segment-baladas selected" onclick="selectSegment(this, 'baladas')">
+                            <div class="segment-icon">🪩</div>
+                            <div class="segment-name">BALADAS</div>
+                            <div class="segment-preview">Sistema cashless + ingressos</div>
+                        </div>
+
+                        <div class="segment-card segment-eventos" onclick="selectSegment(this, 'eventos')">
+                            <div class="segment-icon">🎪</div>
+                            <div class="segment-name">EVENTOS/SHOWS</div>
+                            <div class="segment-preview">Gestão de eventos premium</div>
+                        </div>
+
+                        <div class="segment-card segment-hoteis" onclick="selectSegment(this, 'hoteis')">
+                            <div class="segment-icon">🏨</div>
+                            <div class="segment-name">HOTÉIS</div>
+                            <div class="segment-preview">Hospedagem + minibar</div>
+                        </div>
+
+                        <div class="segment-card segment-estadios" onclick="selectSegment(this, 'estadios')">
+                            <div class="segment-icon">🏟️</div>
+                            <div class="segment-name">ESTÁDIOS</div>
+                            <div class="segment-preview">Vendas em massa + localizações</div>
+                        </div>
+
+                        <div class="segment-card segment-escolas" onclick="selectSegment(this, 'escolas')">
+                            <div class="segment-icon">🎓</div>
+                            <div class="segment-name">ESCOLAS</div>
+                            <div class="segment-preview">Cantina + controle estudantil</div>
+                        </div>
+
+                        <div class="segment-card segment-foodpark" onclick="selectSegment(this, 'foodpark')">
+                            <div class="segment-icon">🚚</div>
+                            <div class="segment-name">FOOD PARK</div>
+                            <div class="segment-preview">Multi-vendedores + praça</div>
+                        </div>
+                    </div>
+
+                    <div class="auto-configs">
+                        <h3 class="auto-configs-title">CONFIGURAÇÕES AUTOMÁTICAS - BALADAS</h3>
+                        <div class="config-list">
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Sistema Cashless habilitado
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Check-in com QR Code
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Dashboard tempo real
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Controle de ingressos
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                PDV móvel otimizado
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Análise demográfica
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                WhatsApp marketing
+                            </div>
+                            <div class="config-item">
+                                <span class="config-check">✅</span>
+                                Relatórios de fechamento
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert-box">
+                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-text">Existe um caixa aberto, feche-o para poder editar.</span>
+                        <button class="alert-button">Fechar caixa automaticamente</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="wizard-navigation">
+                <button class="btn-nav btn-prev" onclick="prevStep()" style="visibility: hidden;">
+                    Anterior
+                </button>
+                <button class="btn-nav btn-next" onclick="nextStep()">
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let selectedSegment = 'baladas';
+
+        // Criar partículas 3D
+        function createParticles() {
+            const container = document.querySelector('.particles-container');
+            const particleCount = 80;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Tamanho aleatório
+                const size = Math.random() * 50 + 20;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Posição inicial aleatória
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Delay aleatório
+                particle.style.animationDelay = Math.random() * 30 + 's';
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Start Wizard
+        function startWizard() {
+            document.getElementById('wizard-container').classList.add('active');
+            updateProgress();
+        }
+
+        // Select Segment
+        function selectSegment(card, segment) {
+            // Remove selected from all
+            document.querySelectorAll('.segment-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            
+            // Add selected to clicked
+            card.classList.add('selected');
+            selectedSegment = segment;
+            
+            // Update auto configs
+            updateAutoConfigs(segment);
+        }
+
+        // Update Auto Configs
+        function updateAutoConfigs(segment) {
+            const configs = {
+                'baladas': [
+                    'Sistema Cashless habilitado',
+                    'Check-in com QR Code',
+                    'Dashboard tempo real',
+                    'Controle de ingressos',
+                    'PDV móvel otimizado',
+                    'Análise demográfica',
+                    'WhatsApp marketing',
+                    'Relatórios de fechamento'
+                ],
+                'bares': [
+                    'Comandas eletrônicas',
+                    'Happy hour automático',
+                    'Controle de mesas',
+                    'Cardápio digital',
+                    'Integração delivery',
+                    'Relatórios de consumo',
+                    'Programa fidelidade',
+                    'Gestão de estoque'
+                ],
+                'restaurantes': [
+                    'Gestão de mesas completa',
+                    'KDS - Display cozinha',
+                    'Tempo de preparo',
+                    'Cardápio digital QR',
+                    'Reservas online',
+                    'Avaliações integradas',
+                    'Split de conta',
+                    'Controle de gorjetas'
+                ]
+            };
+
+            const configList = configs[segment] || configs['baladas'];
+            const title = document.querySelector('.auto-configs-title');
+            title.textContent = `CONFIGURAÇÕES AUTOMÁTICAS - ${segment.toUpperCase()}`;
+            
+            const listElement = document.querySelector('.config-list');
+            listElement.innerHTML = configList.map(config => `
+                <div class="config-item">
+                    <span class="config-check">✅</span>
+                    ${config}
+                </div>
+            `).join('');
+        }
+
+        // Navigation
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStep();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStep();
+            }
+        }
+
+        function updateStep() {
+            updateProgress();
+            updateContent();
+            updateNavigation();
+        }
+
+        function updateProgress() {
+            // Update progress bar fill
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressFill.style.width = progressPercentage + '%';
+            
+            // Update step circles
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep - 1) {
+                    step.classList.add('completed');
+                } else if (index === currentStep - 1) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        function updateContent() {
+            const stepContent = document.getElementById('step-content');
+            
+            // Content for each step
+            const contents = {
+                1: `
+                    <div class="step-pane" data-step="1">
+                        <h2 class="step-title">Qual é o segmento do seu estabelecimento?</h2>
+                        <p class="step-subtitle">Selecione a alternativa que mais representa o seu negócio:</p>
+                        ${stepContent.innerHTML}
+                    </div>
+                `,
+                2: `
+                    <div class="step-pane" data-step="2">
+                        <h2 class="step-title">Configure seu ambiente ${selectedSegment.toUpperCase()}</h2>
+                        <p class="step-subtitle">Personalize as configurações específicas do seu negócio:</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 12px;">
+                                <h3 style="color: var(--neon-purple); margin-bottom: 15px;">🎵 Integração com DJ/Som</h3>
+                                <label style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8);">
+                                    <input type="checkbox" checked> Sistema de som integrado
+                                </label>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 12px;">
+                                <h3 style="color: var(--neon-blue); margin-bottom: 15px;">💡 Controle de iluminação</h3>
+                                <label style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8);">
+                                    <input type="checkbox" checked> Iluminação automatizada
+                                </label>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 12px;">
+                                <h3 style="color: var(--neon-green); margin-bottom: 15px;">👥 Capacidade máxima</h3>
+                                <input type="number" value="500" style="width: 100%; padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff;">
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 12px;">
+                                <h3 style="color: var(--neon-pink); margin-bottom: 15px;">⏰ Horário de funcionamento</h3>
+                                <input type="text" value="22:00 - 06:00" style="width: 100%; padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff;">
+                            </div>
+                        </div>
+                    </div>
+                `,
+                3: `
+                    <div class="step-pane" data-step="3">
+                        <h2 class="step-title">Produtos sugeridos para ${selectedSegment.toUpperCase()}</h2>
+                        <p class="step-subtitle">Selecionamos os produtos mais vendidos para seu segmento:</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px;">
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">🍺</div>
+                                <div style="color: #fff;">Bebidas Alcóolicas</div>
+                                <div style="color: var(--neon-green); font-size: 12px;">32 produtos</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">🥤</div>
+                                <div style="color: #fff;">Bebidas Não Alcóolicas</div>
+                                <div style="color: var(--neon-green); font-size: 12px;">18 produtos</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">🍕</div>
+                                <div style="color: #fff;">Petiscos/Porções</div>
+                                <div style="color: var(--neon-green); font-size: 12px;">24 produtos</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">🎫</div>
+                                <div style="color: #fff;">Ingressos/Entradas</div>
+                                <div style="color: var(--neon-green); font-size: 12px;">8 tipos</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 12px;">
+                            <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 16px;">
+                                <input type="checkbox" checked style="width: 20px; height: 20px;">
+                                <span>Adicionar produtos básicos automaticamente</span>
+                            </label>
+                        </div>
+                    </div>
+                `,
+                4: `
+                    <div class="step-pane success-container" data-step="4">
+                        <div class="success-icon">🚀</div>
+                        <h2 class="success-title">Sistema Configurado com Sucesso!</h2>
+                        <p style="color: rgba(255, 255, 255, 0.8); font-size: 18px; margin-bottom: 30px;">
+                            Seu sistema está pronto para começar a vender!
+                        </p>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; text-align: left; max-width: 600px; margin: 0 auto;">
+                            <h3 style="color: var(--neon-purple); margin-bottom: 20px;">Resumo da Configuração:</h3>
+                            <div style="display: grid; gap: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--neon-green);">✅</span>
+                                    <span>Segmento: ${selectedSegment.toUpperCase()}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--neon-green);">✅</span>
+                                    <span>8 módulos habilitados</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--neon-green);">✅</span>
+                                    <span>82 produtos adicionados</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--neon-green);">✅</span>
+                                    <span>Integrações configuradas</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-start" style="margin-top: 40px;" onclick="window.location.reload()">
+                            🎉 ATIVAR SISTEMA SUPREME
+                        </button>
+                    </div>
+                `
+            };
+
+            stepContent.innerHTML = contents[currentStep] || contents[1];
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.querySelector('.btn-prev');
+            const nextBtn = document.querySelector('.btn-next');
+            
+            // Show/hide previous button
+            prevBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+            
+            // Update next button text
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'block';
+                nextBtn.textContent = currentStep === totalSteps - 1 ? 'Finalizar' : 'Continuar';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>

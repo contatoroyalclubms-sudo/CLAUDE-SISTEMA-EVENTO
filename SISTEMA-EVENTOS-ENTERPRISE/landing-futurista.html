@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Eventos - Ultra Performance Edition</title>
+    
+    <!-- Fontes Futuristas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js para efeitos 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- GSAP para animações avançadas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        /* ==================== VARIÁVEIS GLOBAIS ==================== */
+        :root {
+            /* Cores Ciberpunk Futuristas */
+            --neon-blue: #00d4ff;
+            --neon-purple: #a855f7;
+            --neon-pink: #ff00ff;
+            --cyber-green: #00ff88;
+            --deep-space: #0a0e27;
+            --dark-matter: #030712;
+            --quantum-white: #f0f9ff;
+            
+            /* Gradientes Holográficos */
+            --gradient-holo: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffc837 100%);
+            --gradient-neon: linear-gradient(270deg, #00d4ff, #a855f7, #ff00ff, #00ff88);
+            --gradient-cyber: linear-gradient(135deg, #00d4ff 0%, #a855f7 50%, #ff00ff 100%);
+            
+            /* Efeitos */
+            --glow-sm: 0 0 20px rgba(0, 212, 255, 0.5);
+            --glow-md: 0 0 40px rgba(168, 85, 247, 0.5);
+            --glow-lg: 0 0 60px rgba(255, 0, 255, 0.5);
+            
+            /* Tipografia */
+            --font-display: 'Orbitron', monospace;
+            --font-body: 'Space Grotesk', sans-serif;
+        }
+        
+        /* ==================== RESET E BASE ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--dark-matter);
+            color: var(--quantum-white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        /* ==================== CURSOR PERSONALIZADO ==================== */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s ease;
+        }
+        
+        /* ==================== CANVAS 3D BACKGROUND ==================== */
+        #canvas-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 2rem;
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            max-width: 1200px;
+        }
+        
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            font-weight: 900;
+            background: var(--gradient-holo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: holographic 3s ease infinite;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 80px rgba(168, 85, 247, 0.5);
+        }
+        
+        @keyframes holographic {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--neon-blue);
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+            text-shadow: var(--glow-sm);
+        }
+        
+        .hero-description {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: rgba(240, 249, 255, 0.8);
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.7s forwards;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        /* ==================== BOTÕES FUTURISTAS ==================== */
+        .btn-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1s forwards;
+        }
+        
+        .btn-futuristic {
+            padding: 1.2rem 3rem;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 2px solid var(--neon-blue);
+            background: transparent;
+            color: var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-futuristic::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-cyber);
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+        
+        .btn-futuristic:hover {
+            color: var(--quantum-white);
+            box-shadow: var(--glow-md);
+            transform: translateY(-2px);
+        }
+        
+        .btn-futuristic:hover::before {
+            left: 0;
+        }
+        
+        .btn-primary {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        /* ==================== CARDS FLUTUANTES ==================== */
+        .floating-cards {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .metric-card {
+            position: absolute;
+            background: rgba(10, 14, 39, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+        
+        .metric-card.card-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .metric-card.card-2 {
+            top: 30%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .metric-card.card-3 {
+            bottom: 25%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+        
+        .metric-value {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(240, 249, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* ==================== SEÇÃO DE FUNCIONALIDADES ==================== */
+        .features {
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, var(--dark-matter) 0%, var(--deep-space) 100%);
+            position: relative;
+        }
+        
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-align: center;
+            margin-bottom: 4rem;
+            background: var(--gradient-holo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: rgba(10, 14, 39, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid transparent;
+            border-image: var(--gradient-neon);
+            border-image-slice: 1;
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .feature-card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-neon);
+            border-radius: 20px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .feature-card:hover::before {
+            opacity: 0.5;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-cyber);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: var(--glow-md);
+        }
+        
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--neon-blue);
+        }
+        
+        .feature-description {
+            color: rgba(240, 249, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        /* ==================== SEÇÃO DE TECNOLOGIAS ==================== */
+        .tech-stack {
+            padding: 8rem 2rem;
+            background: var(--deep-space);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .tech-item {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+            transition: all 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        .tech-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--neon-blue);
+            box-shadow: var(--glow-md);
+        }
+        
+        .tech-item:hover::after {
+            width: 200%;
+            height: 200%;
+        }
+        
+        .tech-name {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--neon-purple);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ==================== SEÇÃO DE ESTATÍSTICAS ==================== */
+        .stats {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--deep-space) 0%, var(--dark-matter) 100%);
+            position: relative;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .stat-item {
+            text-align: center;
+            position: relative;
+        }
+        
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 900;
+            background: var(--gradient-holo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 1.2rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* ==================== FORMULÁRIO DE LOGIN ==================== */
+        .login-section {
+            padding: 8rem 2rem;
+            background: var(--dark-matter);
+            position: relative;
+        }
+        
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(10, 14, 39, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--neon-blue), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0.1;
+        }
+        
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--neon-blue);
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            color: var(--quantum-white);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: var(--font-body);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(240, 249, 255, 0.3);
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--neon-blue);
+            animation: scan 2s linear infinite;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .form-input:focus ~ .scan-line {
+            opacity: 1;
+        }
+        
+        @keyframes scan {
+            from { transform: translateY(0); }
+            to { transform: translateY(50px); }
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1.5rem;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--gradient-cyber);
+            border: none;
+            border-radius: 10px;
+            color: var(--quantum-white);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(168, 85, 247, 0.4);
+        }
+        
+        .credentials-hint {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            color: var(--cyber-green);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ==================== FOOTER CIBERPUNK ==================== */
+        .footer {
+            padding: 4rem 2rem 2rem;
+            background: linear-gradient(180deg, var(--dark-matter) 0%, #000 100%);
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            position: relative;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-section h3 {
+            font-family: var(--font-display);
+            color: var(--neon-purple);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: rgba(240, 249, 255, 0.6);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .footer-links a:hover {
+            color: var(--neon-blue);
+            text-shadow: var(--glow-sm);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            color: rgba(240, 249, 255, 0.4);
+        }
+        
+        .typewriter {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 2px solid var(--neon-blue);
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--neon-blue) }
+        }
+        
+        /* ==================== RESPONSIVIDADE ==================== */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .floating-cards {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        
+        /* ==================== LOADING SCREEN ==================== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-matter);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.loaded {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(0, 212, 255, 0.2);
+            border-top: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Cursor Personalizado -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursorFollower"></div>
+    
+    <!-- Canvas 3D Background -->
+    <canvas id="canvas-3d"></canvas>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-cards">
+            <div class="metric-card card-1">
+                <div class="metric-value">99.9%</div>
+                <div class="metric-label">Uptime</div>
+            </div>
+            <div class="metric-card card-2">
+                <div class="metric-value">10K+</div>
+                <div class="metric-label">Eventos</div>
+            </div>
+            <div class="metric-card card-3">
+                <div class="metric-value">1M+</div>
+                <div class="metric-label">Check-ins</div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">Sistema de Eventos</h1>
+            <h2 class="hero-subtitle">Ultra Performance Edition</h2>
+            <p class="hero-description">
+                Transforme Seus Eventos em Experiências Inesquecíveis.<br>
+                Tecnologia de Ponta, Performance Ultra Rápida, Resultados Extraordinários.
+            </p>
+            <div class="btn-container">
+                <a href="#login" class="btn-futuristic btn-primary">Começar Gratuitamente</a>
+                <a href="#features" class="btn-futuristic">Ver Demonstração</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Funcionalidades do Futuro</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Check-in Instantâneo</h3>
+                    <p class="feature-description">
+                        Sistema de check-in com QR Code e reconhecimento facial. 
+                        Processamento em menos de 1 segundo.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3 class="feature-title">PDV Inteligente</h3>
+                    <p class="feature-description">
+                        Ponto de venda com IA para sugestões personalizadas. 
+                        Aceita PIX, cartões e criptomoedas.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Dashboard BI</h3>
+                    <p class="feature-description">
+                        Análises em tempo real com visualizações 3D interativas. 
+                        Insights preditivos com Machine Learning.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Relatórios Avançados</h3>
+                    <p class="feature-description">
+                        Relatórios personalizados com exportação em múltiplos formatos. 
+                        Gráficos holográficos e análise preditiva.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Segurança Quântica</h3>
+                    <p class="feature-description">
+                        Criptografia de última geração com blockchain. 
+                        Proteção contra ataques quânticos futuros.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Ultra Performance</h3>
+                    <p class="feature-description">
+                        Response time < 50ms. Suporte para 1 milhão de usuários simultâneos. 
+                        Cache distribuído global.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Tech Stack Section -->
+    <section class="tech-stack">
+        <div class="tech-container">
+            <h2 class="section-title">Tecnologias de Ponta</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-name">React 18</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">TypeScript</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">FastAPI</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">PostgreSQL</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Redis</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Docker</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Kubernetes</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">GraphQL</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title">Números Impressionantes</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="99.9">0</span>
+                    <span class="stat-label">% Disponibilidade</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="10000">0</span>
+                    <span class="stat-label">Eventos Realizados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="1000000">0</span>
+                    <span class="stat-label">Participantes</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Login Section -->
+    <section class="login-section" id="login">
+        <div class="container">
+            <div class="login-container">
+                <h2 class="login-title">Acesso Restrito</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" class="form-input" placeholder="Seu e-mail" required>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-input" placeholder="Sua senha" required>
+                        <div class="scan-line"></div>
+                    </div>
+                    <button type="submit" class="btn-login">Entrar no Sistema</button>
+                </form>
+                <div class="credentials-hint">
+                    <strong>Credenciais de Teste:</strong><br>
+                    admin@teste.com / admin123
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sistema de Eventos</h3>
+                <p style="color: rgba(240, 249, 255, 0.6); line-height: 1.6;">
+                    A plataforma mais avançada para gestão de eventos do Brasil. 
+                    Tecnologia de ponta para resultados extraordinários.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Links Rápidos</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Funcionalidades</a></li>
+                    <li><a href="#tech">Tecnologias</a></li>
+                    <li><a href="#stats">Estatísticas</a></li>
+                    <li><a href="#login">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contato</h3>
+                <ul class="footer-links">
+                    <li><a href="#">contato@sistemaeventos.com</a></li>
+                    <li><a href="#">(11) 9999-9999</a></li>
+                    <li><a href="#">São Paulo, Brasil</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Social</h3>
+                <ul class="footer-links">
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="typewriter">© 2025 Sistema de Eventos - Todos os direitos reservados</p>
+        </div>
+    </footer>
+    
+    <script>
+        // ==================== CURSOR PERSONALIZADO ====================
+        const cursor = document.getElementById('cursor');
+        const cursorFollower = document.getElementById('cursorFollower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX - 10 + 'px';
+                cursorFollower.style.top = e.clientY - 10 + 'px';
+            }, 100);
+        });
+        
+        // ==================== PARTÍCULAS 3D BACKGROUND ====================
+        let scene, camera, renderer, particles;
+        
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 50;
+            
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('canvas-3d'),
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Criar partículas
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            const colors = [];
+            
+            for (let i = 0; i < 1000; i++) {
+                vertices.push(
+                    Math.random() * 100 - 50,
+                    Math.random() * 100 - 50,
+                    Math.random() * 100 - 50
+                );
+                
+                // Cores ciberpunk
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.3 + 0.5, 1, 0.5);
+                colors.push(color.r, color.g, color.b);
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+            
+            animate3D();
+        }
+        
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+            
+            // Mouse interaction
+            if (window.mouseX) {
+                particles.rotation.y = window.mouseX * 0.0001;
+                particles.rotation.x = window.mouseY * 0.0001;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Mouse tracking for 3D
+        document.addEventListener('mousemove', (e) => {
+            window.mouseX = e.clientX - window.innerWidth / 2;
+            window.mouseY = e.clientY - window.innerHeight / 2;
+        });
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // ==================== SCROLL ANIMATIONS ====================
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animar cards de funcionalidades
+        gsap.utils.toArray('.feature-card').forEach((card, index) => {
+            gsap.fromTo(card, 
+                { 
+                    y: 100, 
+                    opacity: 0,
+                    rotateX: -30
+                },
+                {
+                    y: 0,
+                    opacity: 1,
+                    rotateX: 0,
+                    duration: 1,
+                    delay: index * 0.1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 80%",
+                        end: "bottom 20%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+        
+        // Animar tech items
+        gsap.utils.toArray('.tech-item').forEach((item, index) => {
+            gsap.fromTo(item,
+                {
+                    scale: 0,
+                    opacity: 0
+                },
+                {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.5,
+                    delay: index * 0.05,
+                    ease: "back.out(1.7)",
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 90%"
+                    }
+                }
+            );
+        });
+        
+        // ==================== CONTADOR ANIMADO ====================
+        function animateCounter() {
+            const counters = document.querySelectorAll('.stat-number');
+            
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const start = 0;
+                const increment = target / (duration / 16);
+                let current = start;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        if (target < 100) {
+                            counter.textContent = current.toFixed(1);
+                        } else if (target < 10000) {
+                            counter.textContent = Math.floor(current).toLocaleString();
+                        } else {
+                            counter.textContent = (current / 1000000).toFixed(1) + 'M';
+                        }
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        if (target < 100) {
+                            counter.textContent = target;
+                        } else if (target < 10000) {
+                            counter.textContent = '10K+';
+                        } else {
+                            counter.textContent = '1M+';
+                        }
+                    }
+                };
+                
+                // Iniciar animação quando visível
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            updateCounter();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                });
+                
+                observer.observe(counter);
+            });
+        }
+        
+        // ==================== FORMULÁRIO DE LOGIN ====================
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const button = e.target.querySelector('.btn-login');
+            const originalText = button.textContent;
+            
+            // Animação de loading
+            button.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⚡</span> Autenticando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '✓ Acesso Autorizado';
+                button.style.background = 'linear-gradient(135deg, #00ff88 0%, #00d4ff 100%)';
+                
+                setTimeout(() => {
+                    alert('Login realizado com sucesso! Redirecionando para o dashboard...');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                }, 1500);
+            }, 2000);
+        });
+        
+        // ==================== LOADING SCREEN ====================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('loaded');
+                
+                // Inicializar 3D após loading
+                init3D();
+                
+                // Iniciar contador
+                animateCounter();
+            }, 1000);
+        });
+        
+        // ==================== SMOOTH SCROLL ====================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // ==================== PARALLAX EFFECT ====================
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero');
+            parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+    </script>
+</body>
+</html>
