@@ -1,11 +1,15 @@
 {
-  "name": "torre-suprema-agency",
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
+  "name": "torre-suprema-event-system",
+  "buildCommand": "mkdir -p dist && cp -r SISTEMA-EVENTOS-ENTERPRISE/* dist/",
+  "outputDirectory": "dist",
   "routes": [
     {
+      "src": "/",
+      "dest": "/SUPREME-landing.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/$1"
     }
   ]
 }

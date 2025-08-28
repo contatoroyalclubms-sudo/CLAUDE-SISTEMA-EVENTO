@@ -18,19 +18,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'frontend/package-lock.json'
 
-    - name: 🔧 Install dependencies
-      working-directory: ./frontend
-      run: npm ci
-
-    - name: 🏗️ Build application
-      working-directory: ./frontend
-      run: npm run build
-      env:
-        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    - name: 🏗️ Prepare HTML Dashboards for Deploy
+      run: |
+        mkdir -p dist
+        cp -r SISTEMA-EVENTOS-ENTERPRISE/* dist/
+        echo "Torre Suprema Event System - HTML Dashboards deployed successfully!" > dist/deploy-info.txt
+        ls -la dist/
 
     - name: 🚀 Deploy to Vercel
       uses: amondnet/vercel-action@v25
@@ -38,5 +32,5 @@ jobs:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.ORG_ID }}
         vercel-project-id: ${{ secrets.PROJECT_ID }}
-        working-directory: ./frontend
+        working-directory: ./dist
         vercel-args: '--prod'
