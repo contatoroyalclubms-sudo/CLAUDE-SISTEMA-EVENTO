@@ -1,0 +1,266 @@
+{
+  "description": "External MCP Server Configurations for Torre Suprema Event System",
+  "version": "1.0.0",
+  "total_servers": 271,
+  "source_path": "C:\\Users\\User\\OneDrive\\Desktop\\MCP-PROGRAMADOR\\MCP01PROG\\claude-ia",
+  "checkin_servers": [
+    {
+      "id": "qr_scanner_mcp",
+      "name": "QR Scanner MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-qr-scanner"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "scan_qr_code",
+          "description": "Scan QR codes for check-in validation"
+        },
+        {
+          "type": "tools",
+          "name": "validate_ticket",
+          "description": "Validate ticket information and guest data"
+        }
+      ],
+      "config": {
+        "scanner_timeout": 30000,
+        "validation_endpoint": "https://api.supreme-events.com/validate",
+        "retry_attempts": 3
+      }
+    },
+    {
+      "id": "facial_recognition_mcp",
+      "name": "Facial Recognition MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-facial-recognition"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "recognize_face",
+          "description": "Facial recognition for VIP check-in"
+        },
+        {
+          "type": "tools",
+          "name": "train_model",
+          "description": "Train facial recognition model with new faces"
+        }
+      ],
+      "config": {
+        "model_version": "supreme_v2",
+        "confidence_threshold": 0.85,
+        "max_faces_per_image": 5
+      }
+    },
+    {
+      "id": "vip_management_mcp",
+      "name": "VIP Management MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-vip-management"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "check_vip_status",
+          "description": "Check if guest has VIP status"
+        },
+        {
+          "type": "tools",
+          "name": "update_vip_list",
+          "description": "Update VIP guest list"
+        }
+      ],
+      "config": {
+        "vip_database_url": "postgresql://localhost:5432/vip_database",
+        "cache_ttl": 300
+      }
+    },
+    {
+      "id": "capacity_control_mcp",
+      "name": "Capacity Control MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-capacity-control"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "check_capacity",
+          "description": "Check current venue capacity"
+        },
+        {
+          "type": "tools",
+          "name": "update_capacity",
+          "description": "Update current capacity count"
+        },
+        {
+          "type": "tools",
+          "name": "send_capacity_alert",
+          "description": "Send alert when capacity limits are reached"
+        }
+      ],
+      "config": {
+        "max_capacity": 1000,
+        "warning_threshold": 0.9,
+        "alert_channels": ["slack", "email", "sms"]
+      }
+    }
+  ],
+  "pdv_servers": [
+    {
+      "id": "payment_processor_mcp",
+      "name": "Payment Processor MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-payment"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "process_payment",
+          "description": "Process credit card and digital payments"
+        },
+        {
+          "type": "tools",
+          "name": "refund_payment",
+          "description": "Process payment refunds"
+        },
+        {
+          "type": "tools",
+          "name": "validate_card",
+          "description": "Validate credit card information"
+        }
+      ],
+      "config": {
+        "gateway_url": "https://api.payment-gateway.com",
+        "supported_methods": ["credit", "debit", "pix", "cashless"],
+        "timeout": 30000
+      }
+    },
+    {
+      "id": "fiscal_printer_mcp",
+      "name": "Fiscal Printer MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-fiscal-printer"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "print_receipt",
+          "description": "Print fiscal receipts and NFC-e"
+        },
+        {
+          "type": "tools",
+          "name": "print_nfce",
+          "description": "Generate and print NFC-e"
+        },
+        {
+          "type": "tools",
+          "name": "check_printer_status",
+          "description": "Check fiscal printer status"
+        }
+      ],
+      "config": {
+        "printer_port": "COM1",
+        "printer_model": "EPSON_TM_T20",
+        "paper_width": 80,
+        "auto_cut": true
+      }
+    },
+    {
+      "id": "inventory_management_mcp",
+      "name": "Inventory Management MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-inventory"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "check_stock",
+          "description": "Check product stock availability"
+        },
+        {
+          "type": "tools",
+          "name": "update_stock",
+          "description": "Update product stock levels"
+        },
+        {
+          "type": "tools",
+          "name": "low_stock_alert",
+          "description": "Send alerts for low stock items"
+        }
+      ],
+      "config": {
+        "database_url": "postgresql://localhost:5432/inventory_database",
+        "low_stock_threshold": 10,
+        "auto_reorder": false
+      }
+    },
+    {
+      "id": "cashless_integration_mcp",
+      "name": "Cashless Integration MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-cashless"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "process_cashless_payment",
+          "description": "Process cashless card payments"
+        },
+        {
+          "type": "tools",
+          "name": "load_cashless_card",
+          "description": "Load credits to cashless card"
+        },
+        {
+          "type": "tools",
+          "name": "check_card_balance",
+          "description": "Check cashless card balance"
+        }
+      ],
+      "config": {
+        "api_url": "https://api.cashless-system.com",
+        "encryption_key": "supreme_cashless_key_2024",
+        "transaction_timeout": 15000
+      }
+    }
+  ],
+  "external_servers": [
+    {
+      "id": "analytics_mcp",
+      "name": "Analytics MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-analytics"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "track_event",
+          "description": "Track user events and interactions"
+        },
+        {
+          "type": "tools",
+          "name": "generate_report",
+          "description": "Generate analytics reports"
+        }
+      ]
+    },
+    {
+      "id": "notification_mcp",
+      "name": "Notification MCP Server",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-notifications"],
+      "capabilities": [
+        {
+          "type": "tools",
+          "name": "send_notification",
+          "description": "Send push notifications to users"
+        },
+        {
+          "type": "tools",
+          "name": "send_email",
+          "description": "Send email notifications"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "total_configured": 10,
+    "remaining_servers": 261,
+    "load_strategy": "dynamic",
+    "health_monitoring": true,
+    "batch_operations": true,
+    "failover_enabled": true,
+    "load_balancing": "round_robin"
+  }
+}

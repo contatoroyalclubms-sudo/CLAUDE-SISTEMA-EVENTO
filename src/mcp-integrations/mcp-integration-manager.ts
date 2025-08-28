@@ -60,6 +60,7 @@ export class MCPIntegrationManager extends EventEmitter {
     super();
     this.logger.log('🔌 MCP INTEGRATION MANAGER - Supreme Connectivity Activated!');
     this.initializeMCPServers();
+    this.loadExternalMCPServers();
     this.startHealthMonitoring();
   }
 
@@ -377,6 +378,95 @@ export class MCPIntegrationManager extends EventEmitter {
     });
 
     this.logger.log(`🚀 ${defaultServers.length} MCP servers configured and ready for connection`);
+  }
+
+  async loadExternalMCPServers(configPath?: string): Promise<void> {
+    this.logger.log('🔄 Loading external MCP servers...');
+    
+    const externalConfigPath = configPath || process.env.EXTERNAL_MCP_CONFIG_PATH || './external-mcp-servers.json';
+    
+    try {
+      const externalServers = await this.loadMCPServerConfigurations(externalConfigPath);
+      
+      externalServers.forEach(server => {
+        this.servers.set(server.id, server);
+        this.stats.set(server.id, {
+          serverId: server.id,
+          totalOperations: 0,
+          successfulOperations: 0,
+          failedOperations: 0,
+          averageResponseTime: 0,
+          uptime: 0,
+          lastHealthCheck: new Date()
+        });
+      });
+      
+      this.logger.log(`✅ Loaded ${externalServers.length} external MCP servers`);
+    } catch (error) {
+      this.logger.error('❌ Failed to load external MCP servers:', error);
+    }
+  }
+
+  private async loadMCPServerConfigurations(configPath: string): Promise<MCPServerConfig[]> {
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    try {
+      if (await this.fileExists(configPath)) {
+        const configData = await fs.readFile(configPath, 'utf8');
+        const config = JSON.parse(configData);
+        
+        const allServers: MCPServerConfig[] = [];
+        
+        if (config.checkin_servers) {
+          allServers.push(...config.checkin_servers.map(server => ({
+            ...server,
+            status: 'disconnected' as const,
+            lastConnection: new Date(0),
+            errorCount: 0,
+            maxRetries: 3
+          })));
+        }
+        
+        if (config.pdv_servers) {
+          allServers.push(...config.pdv_servers.map(server => ({
+            ...server,
+            status: 'disconnected' as const,
+            lastConnection: new Date(0),
+            errorCount: 0,
+            maxRetries: 3
+          })));
+        }
+        
+        if (config.external_servers) {
+          allServers.push(...config.external_servers.map(server => ({
+            ...server,
+            status: 'disconnected' as const,
+            lastConnection: new Date(0),
+            errorCount: 0,
+            maxRetries: 3
+          })));
+        }
+        
+        return allServers;
+      }
+      
+      this.logger.warn(`⚠️ External MCP config file not found: ${configPath}`);
+      return [];
+    } catch (error) {
+      this.logger.error(`❌ Error loading MCP configurations from ${configPath}:`, error);
+      return [];
+    }
+  }
+
+  private async fileExists(filePath: string): Promise<boolean> {
+    const fs = require('fs').promises;
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private startHealthMonitoring() {
